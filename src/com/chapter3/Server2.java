@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Created by Administrator on 2017/3/2.
  */
 public class Server2 {
-    public static ArrayList<Socket> sockets = new ArrayList<>();
+    public static ArrayList<ServerThread> sockets = new ArrayList<>();
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
         Socket socket = null;
@@ -20,15 +20,14 @@ public class Server2 {
             serverSocket = new ServerSocket(10087);
             while (true){
                 socket = serverSocket.accept();
-                sockets.add(socket);
                 new Thread(new ServerThread(socket)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
-            if (socket!=null){
+            if (serverSocket!=null){
                 try {
-                    socket.close();
+                    serverSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -40,11 +39,13 @@ public class Server2 {
     private static class ServerThread implements Runnable{
         Socket socket = null;
         BufferedReader bufferedReader = null;
-//        PrintWriter printWriter = null;
+        PrintWriter printWriter = null;
 
         public ServerThread(Socket socket) throws IOException {
             this.socket = socket;
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printWriter = new PrintWriter(socket.getOutputStream(),true);
+            sockets.add(this);
 
         }
 
@@ -54,13 +55,14 @@ public class Server2 {
             String str;
             try {
                 while ((str = bufferedReader.readLine())!=null){
-                    for (Socket socket1 : sockets
-                            ) {
-                        PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
-                        printWriter.println("来自客户端："+str);
-                    }
+                    printWriter.println("来自客户端："+str);
 //                    printWriter.flush();
                 }
+                for (ServerThread st:sockets
+                     ) {
+                    st.printWriter.println(str);
+                }
+
             } catch (IOException e) {
                 Server2.sockets.remove(socket);
                 e.printStackTrace();
