@@ -1,9 +1,6 @@
 package com.chapter3;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -40,11 +37,13 @@ public class Server2 {
         Socket socket = null;
         BufferedReader bufferedReader = null;
         PrintWriter printWriter = null;
+        boolean flag = true;
 
         public ServerThread(Socket socket) throws IOException {
             this.socket = socket;
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            printWriter = new PrintWriter(socket.getOutputStream(),true);
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
+//            printWriter = new PrintWriter(socket.getOutputStream(),true);
+            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true);
             sockets.add(this);
 
         }
@@ -52,21 +51,43 @@ public class Server2 {
         @Override
         public void run() {
 
-            String str;
-            try {
-                while ((str = bufferedReader.readLine())!=null){
-                    printWriter.println("来自客户端："+str);
-//                    printWriter.flush();
+            while (true){
+                if (!flag){
+                    break;
                 }
-                for (ServerThread st:sockets
-                     ) {
-                    st.printWriter.println(str);
-                }
+                String str;
+                try {
+                    while ((str = bufferedReader.readLine())!=null){
+                        if ((str.substring(str.length()-4)).equalsIgnoreCase("quit")){
+                            sockets.remove(this);
+                            flag = false;
+                            printWriter.println("disconnect");
+                            break;
+                        }
+                        System.out.println(str);
+                        //-----将消息发送到所有的客户端
+                        for (ServerThread st:sockets
+                                ) {
+                            st.printWriter.println(str);
+                        }
+                    }
 
-            } catch (IOException e) {
-                Server2.sockets.remove(socket);
-                e.printStackTrace();
+                } catch (IOException e) {
+//                    Server2.sockets.remove(socket);
+                    e.printStackTrace();
+
+                }
+                finally {
+                    if (socket!=null){
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
+
         }
     }
 
