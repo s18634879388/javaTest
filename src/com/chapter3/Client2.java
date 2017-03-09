@@ -27,11 +27,11 @@ public class Client2{
         try {
             socket = new Socket("172.16.15.31",10087);
 //            printWriter = new PrintWriter(socket.getOutputStream(),true);
-            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true);
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
-            printWriter.println(user+"ä¸Šçº¿äº†ï¼");
+            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            printWriter.println(user+"ÉÏÏßÁË£¡");
             String str;
-            bufferedReader1 = new BufferedReader(new InputStreamReader(System.in,"UTF-8"));
+            bufferedReader1 = new BufferedReader(new InputStreamReader(System.in));
             new Thread(new ClientThread()).start();
             while (flag&&(str=bufferedReader1.readLine())!=null){
                 if (!flag){
@@ -73,7 +73,7 @@ public class Client2{
                     while ((str = bufferedReader.readLine())!=null){
                         if (str.equalsIgnoreCase("disconnect")){
                             flag = false;
-                            System.out.println("æŒ‰ä»»æ„é”®å¹¶å›è½¦ä»¥ç¡®å®šé€€å‡º");
+                            System.out.println("ÊäÈëÈÎÒâ¼ü²¢»Ø³µÒÔÍË³ö£¡");
                         }
                         if (!str.equalsIgnoreCase("disconnect")){
                             System.out.println(str);

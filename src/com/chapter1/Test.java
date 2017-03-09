@@ -43,7 +43,7 @@ public class Test {
             case "大":
                 System.out.println("boy");
                 break;
-            case "小" :
+            case "小":
                 System.out.println("girl");
                 break;
             default:

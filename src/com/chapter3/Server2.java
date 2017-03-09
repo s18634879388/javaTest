@@ -41,9 +41,9 @@ public class Server2 {
 
         public ServerThread(Socket socket) throws IOException {
             this.socket = socket;
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"UTF-8"));
+            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //            printWriter = new PrintWriter(socket.getOutputStream(),true);
-            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true);
+            printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
             sockets.add(this);
 
         }
@@ -65,7 +65,7 @@ public class Server2 {
                             break;
                         }
                         System.out.println(str);
-                        //-----å°†æ¶ˆæ¯å‘é€åˆ°æ‰€æœ‰çš„å®¢æˆ·ç«¯
+                        //-----Ñ­»··¢ËÍ¸øÃ¿Ò»¸ö¿Í»§¶Ë
                         for (ServerThread st:sockets
                                 ) {
                             st.printWriter.println(str);
